@@ -1,4 +1,4 @@
-Shader "Custom/EnterWorld"
+Shader "Custom/Reveal"
 {
     Properties
     {
@@ -6,9 +6,8 @@ Shader "Custom/EnterWorld"
         [HDR]_LineColor("Scan Line Color", Color) = (1,1,1,1)
         [HDR]_TrajectoryColor("Scan Trajectory Color", Color) = (0.3, 0.3, 0.3, 1)
         _LineSize("Scan Line Size", Float) = 0.02
-        _TrajectorySize("Scan Trajectory Size", Range(0,0.1)) = 0.1
-        _TimeFactor("Time", Float) = 0
-        _Alpha("Alpha", Range(0,1)) = 0
+        _TrajectorySize("Scan Trajectory Size", Range(0,1)) = 0.1
+        _RevealTime("_RevealTime", Float) = 0
     }
     SubShader
     {
@@ -49,8 +48,7 @@ Shader "Custom/EnterWorld"
             float _LineSize;
             float4 _TrajectoryColor;
             float _TrajectorySize;
-            float _TimeFactor;
-            float _Alpha;
+            float _RevealTime;
 
             v2f vert(appdata v)
             {
@@ -64,12 +62,13 @@ Shader "Custom/EnterWorld"
 
             float4 frag(v2f i) : SV_Target
             {
-                //カメラの正面方向にエフェクトを進める
-                //-UNITY_MATRIX_V[2].xyzでWorldSpaceのカメラの向きが取得できる
-                float dotResult = dot(i.worldPos, normalize(-UNITY_MATRIX_V[2].xyz));
+                //カメラの位置を中心として円形状にエフェクトを進める
+                float3 worldPos = float3(i.worldPos.x, 0, i.worldPos.z);
+                float3 cameraPos = float3(_WorldSpaceCameraPos.x, 0, _WorldSpaceCameraPos.z);
+                float dist = distance(cameraPos, worldPos);
                 //時間変化に伴い値を減算する
-                float lineStartPosition = abs(dotResult + 1.1 - _TimeFactor);
-                float lineEndPosition = abs(dotResult + 1.1 + _TrajectorySize - _TimeFactor);
+                float lineStartPosition = abs(dist - _TrajectorySize - _RevealTime);
+                float lineEndPosition = abs(dist + _TrajectorySize - _RevealTime);
                 //スキャンラインの大きさを計算　step(a,b) はbがaより大きい場合1を返す
                 //すなわち、_LineSizeが大きくなればstepが1を返す値の範囲も大きくなる
                 float scanline = step(lineStartPosition, _LineSize);
@@ -79,8 +78,9 @@ Shader "Custom/EnterWorld"
                 float trajectory = 1 - smoothstep(_LineSize, _LineSize + _TrajectorySize, lineStartPosition);
                 //ここまでの計算結果を元に色を反映
                 float4 color = lerp(_MainColor, _LineColor * scanline + _TrajectoryColor * trajectory, trajectory);
+                //スキャンラインの進行度合いに応じて透明度を変化させる
                 float alpha = step(lineStartPosition, lineEndPosition);
-                color.a = alpha * _Alpha;
+                color.a = alpha;
                 clip(color.a - 0.01);
                 return color;
             }
