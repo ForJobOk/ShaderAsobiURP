@@ -17,7 +17,7 @@ Shader "Custom/SimpleUnlitTextrure"
             //レンダリングのタイミング(順番)
             "RenderType" = "Opaque"
             //レンダーパイプラインを指定する。なくても動く。動作環境を制限する役割。
-            "RenderPipeline" = "UniversalRenderPipeline"
+            "RenderPipeline" = "UniversalPipeline"
         }
 
         Pass
@@ -81,7 +81,7 @@ Shader "Custom/SimpleUnlitTextrure"
                 return o;
             }
 
-            //フラグメントシェーダー。引数には頂点シェーダーで処理された構造体が渡ってくる。          
+            //フラグメントシェーダー。引数には頂点シェーダーで処理された構造体が渡ってくる。
             float4 frag(v2f i) : SV_Target
             {
                 //テスクチャーのサンプリング。

@@ -12,7 +12,7 @@ Shader "Custom/Posterize"
             //レンダリングのタイミング(順番)
             "RenderType" = "Opaque"
             //レンダーパイプラインを指定する。なくても動く。動作環境を制限する役割。
-            "RenderPipeline" = "UniversalRenderPipeline"
+            "RenderPipeline" = "UniversalPipeline"
         }
 
         Pass

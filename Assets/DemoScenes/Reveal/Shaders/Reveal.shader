@@ -16,7 +16,7 @@ Shader "Custom/Reveal"
             "RenderType"="Transparent"
 
             //レンダーパイプラインを指定する。なくても動く。動作環境を制限する役割。
-            "RenderPipeline" = "UniversalRenderPipeline"
+            "RenderPipeline" = "UniversalPipeline"
         }
         Blend SrcAlpha OneMinusSrcAlpha
 

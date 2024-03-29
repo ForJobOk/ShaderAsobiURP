@@ -15,7 +15,7 @@ Shader "Custom/LED"
             //レンダリングのタイミング(順番)
             "RenderType" = "Opaque"
             //レンダーパイプラインを指定する。なくても動く。動作環境を制限する役割。
-            "RenderPipeline" = "UniversalRenderPipeline"
+            "RenderPipeline" = "UniversalPipeline"
         }
 
         Pass
@@ -87,7 +87,7 @@ Shader "Custom/LED"
                 //UVの値が1付近の場合、なぜかモザイクの位置がずれるので調整
                 float2 clampPosterize = clamp(posterize, 0, 0.99);
                 float4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, clampPosterize);
-                
+
                 float2 uv = i.uv * size;
                 float4 pix = SAMPLE_TEXTURE2D(_PixShape, sampler_PixShape, uv);
                 return col * pix * _Intensity;
